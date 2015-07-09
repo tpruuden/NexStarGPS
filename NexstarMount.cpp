@@ -108,8 +108,8 @@ bool NexstarMessageReceiver::process(int data) {
 	return false;
 }
 
-NexstarMessageSender::NexstarMessageSender(TinyGPS* _gps, uint8_t _rtsPin, uint8_t _ctsPin)
-: gps(_gps),rtsPin(_rtsPin),ctsPin(_ctsPin)
+NexstarMessageSender::NexstarMessageSender(TinyGPS* _gps)
+: gps(_gps)
 {
 	message.msg.header.preamble = MSG_PREAMBLE;
 }
@@ -135,28 +135,29 @@ bool NexstarMessageSender::send(SoftwareSerial* serial) {
 //	Serial.println("Starting to send response");
 //	Serial.println("Checking for RTS to be low");
 	long start=millis();
+	/*
 	while(digitalRead(rtsPin)==LOW) {
-		// wait
-//		Serial.println("Waiting for signals to be released");
 		if (millis()-start>250) {
 			goto ende;
 		}
 	}
+	*/
 	// switch to OUTPUT FOR rtsPin
-	digitalWrite(rtsPin,HIGH);
-	pinMode(rtsPin,OUTPUT);
+	//digitalWrite(rtsPin,HIGH);
+	//pinMode(rtsPin,OUTPUT);
 	
 	// Request send allowance
-	digitalWrite(rtsPin,LOW);
+	//digitalWrite(rtsPin,LOW);
 	
 	// Wait for send clearance
 	start=millis();
+	/*
 	while(digitalRead(ctsPin)==HIGH) {
-//		Serial.println("Waiting for CTS");
 		if (millis()-start>250) {
 			goto ende;
 		}
 	}
+	*/
 
 	sendByte(serial,message.msg.header.preamble);
 	sendByte(serial,message.msg.header.length);
@@ -167,10 +168,11 @@ bool NexstarMessageSender::send(SoftwareSerial* serial) {
 	for (uint8_t c=0;c<bytes_to_send;++c) {
 		sendByte(serial,message.msg.payload[c]);
 	}
-
+/*
 	digitalWrite(rtsPin,HIGH);
 	ende:
 	pinModeTri(rtsPin);
+	*/
 	return true;
 }
 
