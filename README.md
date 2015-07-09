@@ -1,4 +1,4 @@
-NexstarMountLib
+NexStarGPS
 ===============
 
 Uses TinyGPS from http://arduiniana.org/libraries/tinygps/ as GPS provider.
@@ -8,6 +8,7 @@ Without the work of Andre Paquette you find at http://www.paquettefamily.ca/nexs
 Licence
 =======
 Copyright 2014 Thomas Peuss <thomas at peuss dot de>
+Copyright 2015 Andrew Evdokimov <i at iflyhigh dot ru>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
