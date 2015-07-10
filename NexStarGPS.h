@@ -96,7 +96,7 @@ protected:
 class NexstarMessageSender
 {
 public:
-	NexstarMessageSender(TinyGPS* _gps);
+	NexstarMessageSender(TinyGPS* _gps, uint8_t _rtsPin, uint8_t _ctsPin);
 	nexstar_msg_union* getMessage();
 	bool send(SoftwareSerial* serial);
 	bool handleMessage(NexstarMessageReceiver* receiver);

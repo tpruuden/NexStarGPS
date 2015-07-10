@@ -6,6 +6,8 @@
 #define TX_PIN 5
 #define RX2_PIN 4
 #define TX2_PIN 6
+#define RTS_PIN 7
+#define CTS_PIN 8
 
 #define SIGNAL_PIN 9
 #define LED_PIN 13
@@ -16,7 +18,7 @@ SoftwareSerial sendmountserial(RX2_PIN, TX2_PIN);
 TinyGPS gps;
 
 NexstarMessageReceiver msg_receiver;
-NexstarMessageSender msg_sender(&gps);
+NexstarMessageSender msg_sender(&gps, RTS_PIN, CTS_PIN)
 
 int ledState = LOW;             // ledState used to set the LED
 long previousMillis = 0;        // will store last time LED was updated
@@ -37,6 +39,9 @@ void setup()
 
 	mountserial.begin(19200);
 
+	// Set RTS/CTS to tri-state
+	pinModeTri(RTS_PIN);
+	pinModeTri(CTS_PIN);
 	pinModeTri(RX2_PIN);
 	pinModeTri(TX2_PIN);
 	msg_receiver.reset();

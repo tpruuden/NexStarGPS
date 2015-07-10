@@ -5,9 +5,6 @@ Uses TinyGPS from http://arduiniana.org/libraries/tinygps/ as GPS provider.
 
 Without the work of Andre Paquette you find at http://www.paquettefamily.ca/nexstar/NexStar_AUX_Commands_10.pdf this library would have been impossible. Andre you rock!
 
-This library does not utilize CTS/RTS pins found on Celestron AUX port connector, 
-allowing usage of widely available 4-pin telephone cables.
-
 Licence
 =======
 Copyright 2014 Thomas Peuss <thomas at peuss dot de>
