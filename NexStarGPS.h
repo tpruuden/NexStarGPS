@@ -1,7 +1,8 @@
 /*
-Arduino Library to talk to the AUX port of Celestron Nexstar compatible mounts.
+Arduino library and sketch to emulate Celestron SkySync GPS
 
 Copyright 2014 Thomas Peuss <thomas at peuss dot de>
+Copyright 2015 Andrew Evdokimov <i at iflyhigh dot ru>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -16,15 +17,16 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
-#ifndef NexstarMount_h
-#define NexstarMount_h
+*/
+
+#ifndef NexStarGPS_h
+#define NexStarGPS_h
 
 #include "Arduino.h"
 #include "SoftwareSerial.h"
 #include "TinyGPS.h"
 
-#define NexstarMount_VERSION 1
+#define NexStarGPS_VERSION 1
 
 #define MSG_PREAMBLE 0x3b
 #define DEVICE_MAINBOARD 0x01
@@ -48,7 +50,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define calc_msg_length(payloadLength) (payloadLength+3)
 
-struct nexstar_msg_header {
+struct nexstar_msg_header
+{
 	uint8_t preamble;
 	uint8_t length;
 	uint8_t from;
@@ -56,17 +59,20 @@ struct nexstar_msg_header {
 	uint8_t messageid;
 };
 
-struct nexstar_msg_struct {
+struct nexstar_msg_struct
+{
 	nexstar_msg_header header;
 	uint8_t payload[10];
 };
 
-union nexstar_msg_union {
+union nexstar_msg_union
+{
 	uint8_t data[sizeof(nexstar_msg_struct)];
 	nexstar_msg_struct msg;
 };
 
-class NexstarMessageReceiver {
+class NexstarMessageReceiver
+{
 public:
 	NexstarMessageReceiver();
 	bool process(int data);
@@ -87,7 +93,8 @@ protected:
 	long last_receive_timestamp;
 };
 
-class NexstarMessageSender {
+class NexstarMessageSender
+{
 public:
 	NexstarMessageSender(TinyGPS* _gps, uint8_t _rtsPin, uint8_t _ctsPin);
 	nexstar_msg_union* getMessage();
@@ -112,7 +119,7 @@ protected:
 	void degToBytes(float* deg);
 	void calc_checksum();
 	void pinModeTri(int pin);
-	void sendByte(SoftwareSerial* serial,uint8_t b);
+	void sendByte(SoftwareSerial* serial, uint8_t b);
 
 	// Fields
 	nexstar_msg_union message;
