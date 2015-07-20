@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define NexStarGPS_VERSION 1
 
 #define MSG_PREAMBLE 0x3b
-#define DEVICE_MAINBOARD 0x01
+#define DEVICE_MAINBOARD 0x0d		// NexStar 5SE identifies main board as 0x0D
 #define DEVICE_HANDCONTROLLER 0x04
 #define DEVICE_AZM_CONTROLLER 0x10
 #define DEVICE_ALT_CONTROLLER 0x11
@@ -96,7 +96,7 @@ protected:
 class NexstarMessageSender
 {
 public:
-	NexstarMessageSender(TinyGPS* _gps, uint8_t _rtsPin, uint8_t _ctsPin);
+	NexstarMessageSender(TinyGPS* _gps);
 	nexstar_msg_union* getMessage();
 	bool send(SoftwareSerial* serial);
 	bool handleMessage(NexstarMessageReceiver* receiver);
@@ -124,8 +124,6 @@ protected:
 	// Fields
 	nexstar_msg_union message;
 	TinyGPS* gps;
-	uint8_t ctsPin;
-	uint8_t rtsPin;
 };
 
 #endif

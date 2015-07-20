@@ -2,76 +2,75 @@
 #include <NexStarGPS.h>
 #include <SoftwareSerial.h>
 
-#define RX_PIN 3
-#define TX_PIN 5
-#define RX2_PIN 4
-#define TX2_PIN 6
-#define RTS_PIN 7
-#define CTS_PIN 8
+#define RX_PIN 5
+#define TX_PIN 3
+#define RX2_PIN 6
+#define TX2_PIN 4
 
 #define SIGNAL_PIN 9
 #define LED_PIN 13
 
 SoftwareSerial mountserial(RX_PIN, TX_PIN);
-SoftwareSerial sendmountserial(RX2_PIN, TX2_PIN);
+//SoftwareSerial sendmountserial(RX2_PIN, TX2_PIN);
 
 TinyGPS gps;
 
 NexstarMessageReceiver msg_receiver;
-NexstarMessageSender msg_sender(&gps, RTS_PIN, CTS_PIN)
+NexstarMessageSender msg_sender(&gps);
 
 int ledState = LOW;             // ledState used to set the LED
 long previousMillis = 0;        // will store last time LED was updated
 
 // the follow variables is a long because the time, measured in miliseconds,
 // will quickly become a bigger number than can be stored in an int.
-long interval_nolock = 250;           // interval at which to blink (milliseconds)
+long interval_nolock = 450;           // interval at which to blink (milliseconds)
 long interval_lock = 10;
 
 boolean haveLock = false;
 
 void setup()
 {
+	// GPS module speed
+	Serial.begin(57600);
 	pinMode(LED_PIN, OUTPUT);
 	digitalWrite(LED_PIN, LOW);
 	pinMode(SIGNAL_PIN, OUTPUT);
 	digitalWrite(SIGNAL_PIN, LOW);
-
 	mountserial.begin(19200);
-
-	// Set RTS/CTS to tri-state
-	pinModeTri(RTS_PIN);
-	pinModeTri(CTS_PIN);
-	pinModeTri(RX2_PIN);
-	pinModeTri(TX2_PIN);
+	pinModeTri(TX_PIN);
+	//pinModeTri(TX2_PIN);
 	msg_receiver.reset();
 
-	// GPS module speed
-	Serial.begin(57600);
+	Serial.println("setup complete");
 }
 
 void loop()
 {
 	unsigned long fix_age;
-
 	if (mountserial.available())
 	{
 		int c = mountserial.read();
+		Serial.println(c, HEX);
 		if (msg_receiver.process(c))
 		{
 			if (msg_sender.handleMessage(&msg_receiver))
 			{
 				digitalWrite(LED_PIN, HIGH);
-				mountserial.end();
-				pinMode(TX2_PIN, OUTPUT);
-				digitalWrite(TX2_PIN, HIGH);
-				sendmountserial.begin(19200);
+				pinMode(TX_PIN, OUTPUT);
+				msg_sender.send(&mountserial);
+				pinModeTri(TX_PIN);
+				/*
+								mountserial.end();
+								pinMode(TX2_PIN, OUTPUT);
+								//digitalWrite(TX2_PIN, HIGH);
+								sendmountserial.begin(19200);
 
-				msg_sender.send(&sendmountserial);
-				sendmountserial.end();
-				pinModeTri(RX2_PIN);
-				pinModeTri(TX2_PIN);
-				mountserial.begin(19200);
+								msg_sender.send(&sendmountserial);
+								sendmountserial.end();
+								pinModeTri(RX2_PIN);
+								pinModeTri(TX2_PIN);
+								mountserial.begin(19200);
+				*/
 				digitalWrite(LED_PIN, LOW);
 			}
 		}
@@ -101,10 +100,10 @@ void loop()
 		if (currentMillis - previousMillis > interval_lock)
 		{
 			previousMillis = currentMillis;
-			static int val = 0;
+			static unsigned int val = 1;
 			static int dir = 1;
 			analogWrite(SIGNAL_PIN, val);
-			if (val == 255)
+			if ((val == 255) || (val == 0))
 			{
 				dir = dir * (-1);
 			}
@@ -128,6 +127,7 @@ void loop()
 			{
 				ledState = LOW;
 			}
+
 
 			digitalWrite(SIGNAL_PIN, ledState);
 		}

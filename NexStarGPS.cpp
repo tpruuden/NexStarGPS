@@ -121,7 +121,7 @@ bool NexstarMessageReceiver::process(int data)
 	return false;
 }
 
-NexstarMessageSender::NexstarMessageSender(TinyGPS* _gps, uint8_t _rtsPin, uint8_t _ctsPin) : gps(_gps), rtsPin(_rtsPin), ctsPin(_ctsPin)
+NexstarMessageSender::NexstarMessageSender(TinyGPS* _gps) : gps(_gps)
 {
 	message.msg.header.preamble = MSG_PREAMBLE;
 }
@@ -148,29 +148,6 @@ bool NexstarMessageSender::send(SoftwareSerial* serial)
 {
 	uint8_t bytes_to_send = message.msg.header.length - 2;
 	calc_checksum();
-	long start = millis();
-	while (digitalRead(rtsPin) == LOW)
-	{
-// wait
-		if (millis() - start > 250)
-		{
-			goto ende;
-		}
-	}
-// switch to OUTPUT FOR rtsPin
-	digitalWrite(rtsPin, HIGH);
-	pinMode(rtsPin, OUTPUT);
-// Request send allowance
-	digitalWrite(rtsPin, LOW);
-// Wait for send clearance
-	start = millis();
-	while (digitalRead(ctsPin) == HIGH)
-	{
-		if (millis() - start > 250)
-		{
-			goto ende;
-		}
-	}
 	sendByte(serial, message.msg.header.preamble);
 	sendByte(serial, message.msg.header.length);
 	sendByte(serial, message.msg.header.from);
@@ -180,15 +157,16 @@ bool NexstarMessageSender::send(SoftwareSerial* serial)
 	{
 		sendByte(serial, message.msg.payload[c]);
 	}
-	digitalWrite(rtsPin, HIGH);
-ende:
-	pinModeTri(rtsPin);
 	return true;
 }
 
-inline void NexstarMessageSender::sendByte(SoftwareSerial* serial, uint8_t b)
+
+
+inline void NexstarMessageSender::sendByte(SoftwareSerial* sserial, uint8_t b)
 {
-	serial->write(b);
+	sserial->write(b);
+	Serial.print("> ");
+	Serial.println(b, HEX);
 }
 
 inline void NexstarMessageSender::pinModeTri(int pin)
@@ -215,7 +193,13 @@ bool NexstarMessageSender::handleMessage(NexstarMessageReceiver* receiver)
 	msgout->msg.header.from = DEVICE_GPS;
 	msgout->msg.header.to = msgin->msg.header.from;
 	msgout->msg.header.messageid = msgin->msg.header.messageid;
-
+	/*
+		if (msgin->msg.header.messageid != MSGID_GPS_GET_VER)
+		{
+			Serial.print("WOW!!!! ");
+			Serial.println(msgin->msg.header.messageid);
+		}
+	*/
 	switch (msgin->msg.header.messageid)
 	{
 	case MSGID_GPS_GET_LAT:
