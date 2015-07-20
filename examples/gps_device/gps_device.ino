@@ -1,16 +1,16 @@
 #include <TinyGPS.h>
 #include <NexStarGPS.h>
-#include <SoftwareSerial.h>
+#include "soss.h"
+#include "ross.h"
 
-#define RX_PIN 5
-#define TX_PIN 3
-#define RX2_PIN 6
-#define TX2_PIN 4
+#define RX_PIN 3
+#define TX_PIN 5
 
 #define SIGNAL_PIN 9
 #define LED_PIN 13
 
-SoftwareSerial mountserial(RX_PIN, TX_PIN);
+ross mountserial(RX_PIN);
+soss sendmountserial(TX_PIN);
 //SoftwareSerial sendmountserial(RX2_PIN, TX2_PIN);
 
 TinyGPS gps;
@@ -36,12 +36,10 @@ void setup()
 	digitalWrite(LED_PIN, LOW);
 	pinMode(SIGNAL_PIN, OUTPUT);
 	digitalWrite(SIGNAL_PIN, LOW);
-	mountserial.begin(19200);
+	pinModeTri(RX_PIN);
 	pinModeTri(TX_PIN);
-	//pinModeTri(TX2_PIN);
+	mountserial.begin(19200);
 	msg_receiver.reset();
-
-	Serial.println("setup complete");
 }
 
 void loop()
@@ -50,27 +48,19 @@ void loop()
 	if (mountserial.available())
 	{
 		int c = mountserial.read();
-		Serial.println(c, HEX);
+		//Serial.println(c, HEX);
 		if (msg_receiver.process(c))
 		{
 			if (msg_sender.handleMessage(&msg_receiver))
 			{
 				digitalWrite(LED_PIN, HIGH);
-				pinMode(TX_PIN, OUTPUT);
-				msg_sender.send(&mountserial);
+				mountserial.end();
+				sendmountserial.begin(19200);
+				msg_sender.send(&sendmountserial);
+				sendmountserial.end();
+				pinModeTri(RX_PIN);
 				pinModeTri(TX_PIN);
-				/*
-								mountserial.end();
-								pinMode(TX2_PIN, OUTPUT);
-								//digitalWrite(TX2_PIN, HIGH);
-								sendmountserial.begin(19200);
-
-								msg_sender.send(&sendmountserial);
-								sendmountserial.end();
-								pinModeTri(RX2_PIN);
-								pinModeTri(TX2_PIN);
-								mountserial.begin(19200);
-				*/
+				mountserial.begin(19200);
 				digitalWrite(LED_PIN, LOW);
 			}
 		}
