@@ -11,7 +11,6 @@
 
 ross mountserial(RX_PIN);
 soss sendmountserial(TX_PIN);
-//SoftwareSerial sendmountserial(RX2_PIN, TX2_PIN);
 
 TinyGPS gps;
 
@@ -23,8 +22,8 @@ long previousMillis = 0;        // will store last time LED was updated
 
 // the follow variables is a long because the time, measured in miliseconds,
 // will quickly become a bigger number than can be stored in an int.
-long interval_nolock = 450;           // interval at which to blink (milliseconds)
-long interval_lock = 10;
+long interval_nolock = 150;           // interval at which to blink (milliseconds)
+long interval_lock = 5;
 
 boolean haveLock = false;
 
@@ -55,6 +54,7 @@ void loop()
 			{
 				digitalWrite(LED_PIN, HIGH);
 				mountserial.end();
+				delay(100);
 				sendmountserial.begin(19200);
 				msg_sender.send(&sendmountserial);
 				sendmountserial.end();
@@ -90,10 +90,10 @@ void loop()
 		if (currentMillis - previousMillis > interval_lock)
 		{
 			previousMillis = currentMillis;
-			static unsigned int val = 1;
+			static unsigned int val = 21;
 			static int dir = 1;
 			analogWrite(SIGNAL_PIN, val);
-			if ((val == 255) || (val == 0))
+			if ((val == 255) || (val == 20))
 			{
 				dir = dir * (-1);
 			}

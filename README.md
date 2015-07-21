@@ -1,13 +1,18 @@
 NexStarGPS
-===============
+==========
 
 Uses TinyGPS from http://arduiniana.org/libraries/tinygps/ as GPS provider.
+
+Uses customized versions of SoftwareSerial and SendOnlySoftwareSerial libraries.
+
+Does not use CTS/RTS pins since they are not used on NexStar 5SE. CTS is always 3V, RTS is always 12V (!). Commonly available 4-wire telephone cables can be used to connect GPS unit to telescope (but you need 6p6c plug on telescope side anyway, just do not connect pins 1 and 6). Also 5SE has TX and RX pins shortcutted so relatively weird logic with two software serial instances (one for TX, another for RX) is used to allow telescope firmware to work properly.
 
 Without the work of Andre Paquette you find at http://www.paquettefamily.ca/nexstar/NexStar_AUX_Commands_10.pdf this library would have been impossible. Andre you rock!
 
 Licence
 =======
 Copyright 2014 Thomas Peuss <thomas at peuss dot de>
+
 Copyright 2015 Andrew Evdokimov <i at iflyhigh dot ru>
 
 This library is free software; you can redistribute it and/or

@@ -167,8 +167,8 @@ bool NexstarMessageSender::send(soss* serial)
 inline void NexstarMessageSender::sendByte(soss* sserial, uint8_t b)
 {
 	sserial->write(b);
-//	Serial.print("> ");
-//	Serial.println(b, HEX);
+	//Serial.print("> ");
+	//Serial.println(b, HEX);
 }
 
 inline void NexstarMessageSender::pinModeTri(int pin)
@@ -195,13 +195,7 @@ bool NexstarMessageSender::handleMessage(NexstarMessageReceiver* receiver)
 	msgout->msg.header.from = DEVICE_GPS;
 	msgout->msg.header.to = msgin->msg.header.from;
 	msgout->msg.header.messageid = msgin->msg.header.messageid;
-	/*
-		if (msgin->msg.header.messageid != MSGID_GPS_GET_VER)
-		{
-			Serial.print("WOW!!!! ");
-			Serial.println(msgin->msg.header.messageid);
-		}
-	*/
+
 	switch (msgin->msg.header.messageid)
 	{
 	case MSGID_GPS_GET_LAT:
@@ -286,6 +280,7 @@ inline void NexstarMessageSender::handleGetTime()
 	message.msg.payload[0] = hour;
 	message.msg.payload[1] = minute;
 	message.msg.payload[2] = second;
+
 }
 
 inline void NexstarMessageSender::handleGetYear()
@@ -365,7 +360,7 @@ inline void NexstarMessageSender::handleGetSoftwareVersion()
 {
 	message.msg.header.length = calc_msg_length(2);
 	message.msg.payload[0] = 0x01; //Major Version
-	message.msg.payload[1] = 0x01; //Minor Version
+	message.msg.payload[1] = 0x00; //Minor Version
 }
 
 inline void NexstarMessageSender::degToBytes(float* deg)
