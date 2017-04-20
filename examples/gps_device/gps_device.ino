@@ -29,14 +29,16 @@ boolean haveLock = false;
 
 void setup()
 {
-	// GPS module speed
-	Serial.begin(57600);
+	// GPS module serial speed, change accordingly to your NMEA 5V GPSmodule serial speed
+	Serial.begin(9600);
 	pinMode(LED_PIN, OUTPUT);
 	digitalWrite(LED_PIN, LOW);
 	pinMode(SIGNAL_PIN, OUTPUT);
 	digitalWrite(SIGNAL_PIN, LOW);
 	pinModeTri(RX_PIN);
 	pinModeTri(TX_PIN);
+	// Software UART speed - RX_PIN, TX_PIN real hardware pins defined at the beginning of this file, for talking to mount.
+	// The wierd single line dual direction UART, Arduino pins connected together, do not change speed.
 	mountserial.begin(19200);
 	msg_receiver.reset();
 }
@@ -47,7 +49,7 @@ void loop()
 	if (mountserial.available())
 	{
 		int c = mountserial.read();
-		//Serial.println(c, HEX);
+		//Serial.println(c, HEX); //debug
 		if (msg_receiver.process(c))
 		{
 			if (msg_sender.handleMessage(&msg_receiver))
